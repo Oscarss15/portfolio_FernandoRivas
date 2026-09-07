@@ -70,6 +70,20 @@ const MOBILE_EXPAND_MIN_VIEWPORT_PX = 1180
 const MOBILE_EXPANDED_WIDTH_VW = 92
 const MOBILE_EXPANDED_HEIGHT_VW = MOBILE_EXPANDED_WIDTH_VW * (2 / 3)
 
+// Page 4's photos (photography-19/20/21) are portrait (2/3), unlike the
+// rest of the table's landscape (3/2) photos — the expand box needs its own
+// dimensions for these, or the landscape-tuned box above (which ends up
+// wider than tall in absolute pixels on most desktop viewports despite its
+// 62vw/78vh naming) crops them the same way the unfixed mobile box used to
+// crop landscape photos. Both dimensions share one unit (vh on desktop, vw
+// on mobile) for the same reason as the mobile fix above: mixing vw width
+// with vh height only produces the right ratio at one specific viewport
+// aspect ratio.
+const PORTRAIT_EXPANDED_HEIGHT_VH = 82
+const PORTRAIT_EXPANDED_WIDTH_VH = PORTRAIT_EXPANDED_HEIGHT_VH * (2 / 3)
+const MOBILE_PORTRAIT_EXPANDED_WIDTH_VW = 70
+const MOBILE_PORTRAIT_EXPANDED_HEIGHT_VW = MOBILE_PORTRAIT_EXPANDED_WIDTH_VW * (3 / 2)
+
 function Photography({ onBack }) {
   const [isLeaving, setIsLeaving] = useState(false)
 
@@ -174,18 +188,23 @@ function Photography({ onBack }) {
   }, [expanded])
 
   const isMobileExpand = typeof window !== 'undefined' && window.innerWidth < MOBILE_EXPAND_MIN_VIEWPORT_PX
+  const isPortraitExpand = expanded ? PORTRAIT_IMAGES.includes(expanded.src) : false
 
   const expandedImgStyle = expanded
     ? {
         top: expanded.active ? '50%' : `${expanded.start.top}px`,
         left: expanded.active ? '50%' : `${expanded.start.left}px`,
         width: expanded.active
-          ? `${isMobileExpand ? MOBILE_EXPANDED_WIDTH_VW : EXPANDED_WIDTH_VW}vw`
+          ? isPortraitExpand
+            ? `${isMobileExpand ? MOBILE_PORTRAIT_EXPANDED_WIDTH_VW : PORTRAIT_EXPANDED_WIDTH_VH}${isMobileExpand ? 'vw' : 'vh'}`
+            : `${isMobileExpand ? MOBILE_EXPANDED_WIDTH_VW : EXPANDED_WIDTH_VW}vw`
           : `${expanded.start.width}px`,
         height: expanded.active
-          ? isMobileExpand
-            ? `${MOBILE_EXPANDED_HEIGHT_VW}vw`
-            : `${EXPANDED_HEIGHT_VH}vh`
+          ? isPortraitExpand
+            ? `${isMobileExpand ? MOBILE_PORTRAIT_EXPANDED_HEIGHT_VW : PORTRAIT_EXPANDED_HEIGHT_VH}${isMobileExpand ? 'vw' : 'vh'}`
+            : isMobileExpand
+              ? `${MOBILE_EXPANDED_HEIGHT_VW}vw`
+              : `${EXPANDED_HEIGHT_VH}vh`
           : `${expanded.start.height}px`,
         rotate: expanded.active ? '0deg' : expanded.start.rotate,
         transform: expanded.active ? 'translate(-50%, -50%)' : 'translate(0, 0)',
