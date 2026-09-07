@@ -269,6 +269,24 @@
 .photography__table-img--4 { top: 50%; left: 40%; width: 27%; rotate: -6deg; z-index: 5; }
 .photography__table-img--5 { top: 54%; left: 69%; width: 25%; rotate: 4deg;  z-index: 3; }
 
+/* Page 4 (photography-19/20/21) is a smaller 3-photo, portrait-oriented
+   page instead of the 6-photo landscape scatter above — the aspect-ratio
+   swap applies everywhere (these photos genuinely are vertical, regardless
+   of viewport), but the repositioned --0/--1/--2 slots are scoped to desktop
+   only (min-width: 1181px) below: unscoped, their 2-class selector would
+   outrank the mobile/tablet stacked-view resets (equal-or-lower specificity
+   there) by specificity alone, regardless of source order, and leak the
+   desktop scatter position into the mobile single-column stack. */
+.photography__table--portrait .photography__table-img {
+  aspect-ratio: 2 / 3;
+}
+
+@media (min-width: 1181px) {
+  .photography__table--portrait .photography__table-img--0 { top: 10%; left: 12%; width: 26%; rotate: -6deg; z-index: 3; }
+  .photography__table--portrait .photography__table-img--1 { top: 6%;  left: 41%; width: 26%; rotate: 4deg;  z-index: 4; }
+  .photography__table--portrait .photography__table-img--2 { top: 10%; left: 66%; width: 26%; rotate: -3deg; z-index: 2; }
+}
+
 /* Pager — prev/next through the 5 screens of 6 photos each. Positioned
    relative to .photography itself (not .photography__gallery-wrap, which
    starts below the back button row) so it lines up at the same height as

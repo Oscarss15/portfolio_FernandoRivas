@@ -31,9 +31,14 @@ const REAL_TABLE_IMAGES = [
   '/img/photography-17.jpg',
   '/img/photography-18.jpg',
 ]
-const TABLE_IMAGES = REAL_TABLE_IMAGES
+// Page 4 (19/20/21) is a smaller, portrait-oriented trio — see
+// PORTRAIT_PAGE_INDEX below and the .photography__table--portrait rules in
+// Photography.css for the aspect-ratio + layout switch this triggers.
+const PORTRAIT_IMAGES = ['/img/photography-19.jpg', '/img/photography-20.jpg', '/img/photography-21.jpg']
+const TABLE_IMAGES = [...REAL_TABLE_IMAGES, ...PORTRAIT_IMAGES]
 const TOTAL_PHOTOS = TABLE_IMAGES.length
 const TOTAL_PAGES = Math.ceil(TOTAL_PHOTOS / PAGE_SIZE)
+const PORTRAIT_PAGE_INDEX = Math.floor(REAL_TABLE_IMAGES.length / PAGE_SIZE)
 const TABLE_STAGGER_MS = 90
 const TABLE_EXIT_DURATION_MS = 600
 const TABLE_ENTRANCE_DURATION_MS = 850 // matches the 0.85s in photography-table-in
@@ -216,7 +221,7 @@ function Photography({ onBack }) {
             <div
               className={`photography__table ${pageLeaving ? 'photography__table--leaving' : ''} ${
                 entranceSettled ? 'photography__table--settled' : ''
-              }`}
+              } ${page === PORTRAIT_PAGE_INDEX ? 'photography__table--portrait' : ''}`}
               key={page}
             >
               {pageImages.map((src, index) => (
