@@ -1,0 +1,81 @@
+/* Single source of truth for every color used across the site — components
+   reference these via var(--...) instead of hardcoding hex/rgba, so a future
+   theme switch only has to change values here (or override them per
+   data-theme, once that's built) instead of hunting through every component's
+   CSS. Hex vars are for solid colors; the "--rgb-*" ones are raw R,G,B
+   triplets specifically so call sites can compose rgba(var(--rgb-x), alpha)
+   at whatever opacity they need, without a separate variable per opacity. */
+:root {
+  --color-cream: #f2efe9;
+  --color-page-bg: #e8e6e6;
+  --color-ink: #1a1a1a;
+  --color-white: #fff;
+  --color-black: #000;
+
+  /* ThemeToggle's 3 comparison-harness face colors (not yet wired to an
+     actual site theme — see CLAUDE.md/ThemeToggle). */
+  --color-theme-dark: #111111;
+  --color-theme-accent: #c9622f;
+
+  --rgb-white: 255, 255, 255;
+  --rgb-black: 0, 0, 0;
+  --rgb-ink: 26, 26, 26;
+  --rgb-cream: 242, 239, 233;
+  --rgb-theme-accent: 201, 98, 47;
+}
+
+/* Dark theme — set via `data-theme="dark"` on <html> (see ThemeToggle.jsx).
+   Every section built on `--color-page-bg` (background) / `--color-ink`
+   (text) — Information, Photography, the video-exit solid layer, and
+   CustomCursor's `--dark` variant (used on Information/Photography) —
+   inverts automatically since they already read from these two variables
+   rather than hardcoded hex. Reusing the existing `--color-theme-dark` token
+   (ThemeToggle's own palette) instead of inventing a new one so there's
+   still only one "the dark color" in the system. `--rgb-ink` is inverted
+   too, so `rgba(var(--rgb-ink), alpha)` call sites (Photography's pager
+   label, CustomCursor's dark-variant ring) stay consistent with the solid
+   `--color-ink` swap. `--color-cream`/`--rgb-cream` are deliberately NOT
+   touched here — they're also CustomCursor's *light*-variant color, used on
+   Home's dark video background regardless of site theme (the video itself
+   doesn't change), so inverting cream would break the Home cursor. */
+:root[data-theme='dark'] {
+  --color-page-bg: var(--color-theme-dark);
+  --color-ink: var(--color-cream);
+  --rgb-ink: 242, 239, 233;
+}
+
+/* Color (accent) theme — same pattern as dark above, using the accent
+   orange as the "page" color instead of near-black. Information/Photography/
+   CustomCursor's dark-variant/etc. all pick this up automatically for the
+   same reason dark theme did — see the comment above. Home's title/subtitle/
+   menu don't use --color-page-bg or --color-ink at all (they sit over the
+   video, not a themed surface), so they're handled separately in Home.css/
+   Menu.css via their own `:root[data-theme='color']` overrides swapping
+   white text for var(--color-theme-accent). */
+:root[data-theme='color'] {
+  --color-page-bg: var(--color-theme-accent);
+  --color-ink: var(--color-cream);
+  --rgb-ink: 242, 239, 233;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100svh;
+  font: 16px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+#root {
+  width: 100%;
+  min-height: 100svh;
+}

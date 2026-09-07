@@ -1,0 +1,509 @@
+/* Same background/palette recipe as .information (Information.css) — fixed
+   full-screen, no own background (relies on VideoBackground's shared solid
+   #e8e6e6 layer, exactly like Information does), same padding/text color.
+   Unlike Information, this stacks top-to-bottom (controls, then an optional
+   caption, then the gallery filling whatever height is left) instead of a
+   left/right column split, so the photos always get the full width. */
+.photography {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-ink);
+  /* Top padding matches .information__back's own top offset exactly (it's
+     absolutely positioned there, ignoring .information's own larger padding)
+     so "Volver" sits at the same height in both sections. Left/right/bottom
+     stay at the larger padding used everywhere else in this section. */
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 5vw, 5rem) clamp(2rem, 5vw, 5rem);
+  box-sizing: border-box;
+  gap: 1rem;
+}
+
+/* --- chrome: back button (copy of .information__back) --- */
+
+.photography__back {
+  align-self: flex-start;
+  flex: 0 0 auto;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  background: transparent;
+  border: 1px solid rgba(var(--rgb-ink), 0.3);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  opacity: 0;
+  filter: blur(14px);
+  animation: photography-chrome-in 1s cubic-bezier(0.33, 0, 0.2, 1) both;
+  animation-delay: 0.1s;
+}
+
+.photography__back:hover {
+  background: var(--color-ink);
+  color: var(--color-page-bg);
+}
+
+.photography__back-arrow {
+  transition: transform 0.2s ease;
+}
+
+.photography__back:hover .photography__back-arrow {
+  transform: translateX(-3px);
+}
+
+@keyframes photography-chrome-in {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.photography--leaving .photography__back {
+  animation: photography-chrome-out 0.4s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+@keyframes photography-chrome-out {
+  from {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+.photography__gallery-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.photography__gallery {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* ============================================================
+   Bento — kept in reserve, not currently active (see LAYOUT in
+   Photography.jsx). Asymmetric mosaic grid, hand-tiled 4x5 with
+   two "hero" 2x2 cells, filling the viewport with zero gaps.
+   ============================================================ */
+
+.photography__bento {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  grid-template-areas:
+    'a a b c'
+    'a a b d'
+    'h h e e'
+    'g f j j'
+    'g i j j';
+  gap: 3px;
+}
+
+.photography__bento-img {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: transform 0.5s cubic-bezier(0.33, 0, 0.2, 1), opacity 0.3s ease, filter 0.4s ease;
+  animation: photography-bento-in 0.7s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+@keyframes photography-bento-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(1.15);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1.08);
+  }
+}
+
+.photography__bento:hover .photography__bento-img:not(:hover) {
+  filter: brightness(0.6);
+}
+
+.photography__bento-img:hover {
+  transform: scale(1.14);
+  z-index: 2;
+}
+
+.photography__bento-img--0 { grid-area: a; }
+.photography__bento-img--1 { grid-area: b; }
+.photography__bento-img--2 { grid-area: c; }
+.photography__bento-img--3 { grid-area: d; }
+.photography__bento-img--4 { grid-area: e; }
+.photography__bento-img--5 { grid-area: f; }
+.photography__bento-img--6 { grid-area: g; }
+.photography__bento-img--7 { grid-area: h; }
+.photography__bento-img--8 { grid-area: i; }
+.photography__bento-img--9 { grid-area: j; }
+
+/* ============================================================
+   Table — the active layout. 6 wide/landscape photo prints, each
+   with a white border like a real photo, scattered at varied
+   sizes/positions/rotations like prints tossed on a table (not
+   a uniform grid — no two are aligned the same way).
+   ============================================================ */
+
+.photography__table {
+  position: absolute;
+  inset: 0;
+}
+
+.photography__table-img {
+  position: absolute;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+  /* Thicker + a faint outer ring so the white border still reads as a
+     "printed photo" edge against the light gray page background — a plain
+     thin white border was nearly invisible on #e8e6e6. */
+  border: 10px solid var(--color-white);
+  box-shadow: 0 0 0 1px rgba(var(--rgb-black), 0.08), 0 10px 26px rgba(var(--rgb-black), 0.4);
+  box-sizing: border-box;
+  opacity: 0;
+  will-change: transform;
+  transition: transform 0.35s cubic-bezier(0.33, 0, 0.2, 1), box-shadow 0.35s ease, filter 0.35s ease, z-index 0s;
+  /* Thrown in from off-screen above the whole page (-130vh — well past the
+     top of the viewport, not just above its own resting spot) and lands on
+     the "table". A single from/to pair with an overshoot easing (same curve
+     as Information's photo pop) gives one continuous fall-and-settle motion —
+     an earlier version used extra keyframe stops (for opacity/blur/bounce
+     separately) which each re-applied their own easing at the segment
+     boundary, causing the motion to visibly stutter instead of read as one
+     fall. Don't reintroduce mid-animation stops without also giving them
+     their own `animation-timing-function` to avoid that. No `filter: blur()`
+     here either — animating blur across a ~130vh distance was the other big
+     contributor to the choppiness (expensive to repaint every frame). */
+  animation: photography-table-in 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes photography-table-in {
+  from {
+    opacity: 0;
+    transform: translateY(-130vh) scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Once the entrance finishes, `.photography__table--settled` (set via a
+   timer in Photography.jsx matching the last photo's entrance) drops the
+   `animation` entirely in favor of a plain resting `transform` — leaving the
+   fill-mode-both animation attached indefinitely made it keep fighting the
+   hover `:hover` transition below for control of `transform`, causing the
+   hover scale to snap instead of ease smoothly. Declared before the leaving
+   rule below so leaving (same specificity) still wins if a page/back
+   transition starts before this class gets removed. */
+.photography__table--settled .photography__table-img {
+  animation: none;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Leaving reverses the entrance exactly (same -130vh distance/scale) so the
+   photos look like they're being pulled back up off the page, not just
+   fading out — an ease-in curve (accelerating away) instead of the
+   entrance's overshoot-out, since retreating should feel like it's snapping
+   away rather than settling. Same treatment for leaving the section entirely
+   (back button, `.photography--leaving`) and for paging to the next/previous
+   6 photos (`.photography__table--leaving`, see the pager in Photography.jsx). */
+.photography--leaving .photography__table-img,
+.photography__table--leaving .photography__table-img {
+  animation: photography-table-out 0.6s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+@keyframes photography-table-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-130vh) scale(1.04);
+  }
+}
+
+.photography__table:hover .photography__table-img:not(:hover) {
+  filter: brightness(0.65);
+}
+
+.photography__table-img:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 16px 40px rgba(var(--rgb-black), 0.55);
+  z-index: 20 !important;
+}
+
+.photography__table-img--0 { top: 3%;  left: 4%;  width: 25%; rotate: -7deg; z-index: 3; }
+.photography__table-img--1 { top: 4%;  left: 38%; width: 24%; rotate: 5deg;  z-index: 2; }
+.photography__table-img--2 { top: 7%;  left: 70%; width: 26%; rotate: -4deg; z-index: 4; }
+.photography__table-img--3 { top: 52%; left: 7%;  width: 26%; rotate: 6deg;  z-index: 2; }
+.photography__table-img--4 { top: 50%; left: 40%; width: 27%; rotate: -6deg; z-index: 5; }
+.photography__table-img--5 { top: 54%; left: 69%; width: 25%; rotate: 4deg;  z-index: 3; }
+
+/* Pager — prev/next through the 5 screens of 6 photos each. Positioned
+   relative to .photography itself (not .photography__gallery-wrap, which
+   starts below the back button row) so it lines up at the same height as
+   "Volver" instead of sitting at the top of the gallery area. */
+
+.photography__pager {
+  position: absolute;
+  top: clamp(1.5rem, 3vw, 2.5rem);
+  right: clamp(2rem, 5vw, 5rem);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.photography__pager-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--color-ink);
+  background: transparent;
+  border: 1px solid rgba(var(--rgb-ink), 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.photography__pager-btn:hover:not(:disabled) {
+  background: var(--color-ink);
+  color: var(--color-page-bg);
+}
+
+.photography__pager-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.photography__pager-label {
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: rgba(var(--rgb-ink), 0.7);
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+/* ============================================================
+   Click-to-expand lightbox — "focus-pull": the clicked photo grows
+   from its exact on-table position/rotation to a large centered
+   card, starting blurred and racking into focus as it settles
+   (top/left/width/height/rotate/filter driven inline from
+   Photography.jsx, frozen start rect -> active target).
+   ============================================================ */
+
+.photography__lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--rgb-black), 0);
+  cursor: pointer;
+  transition: background 0.35s ease;
+}
+
+.photography__lightbox--active {
+  background: rgba(var(--rgb-black), 0.75);
+}
+
+.photography__lightbox-img {
+  /* `cover` (not `contain`) so the photo always fills its frame edge to
+     edge — `contain` left bare gaps inside the white border whenever the
+     photo's aspect ratio didn't exactly match the box. */
+  object-fit: cover;
+  border: 10px solid var(--color-white);
+  box-shadow: 0 20px 60px rgba(var(--rgb-black), 0.5);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.photography__lightbox-img--focus-pull {
+  position: fixed;
+  transform-origin: top left;
+  transition:
+    top 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+    left 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+    width 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+    height 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+    rotate 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+    filter 0.5s ease;
+}
+
+/* ============================================================
+   Mobile + tablet: the hand-placed scattered/rotated "table" doesn't
+   translate to a narrow screen (it was tuned for a wide landscape-ish
+   area) — both breakpoints fall into normal document flow instead of
+   absolute positioning (1 photo per row on mobile, 2 per row on tablet —
+   see each block below). 6 stacked photos don't fit one screen either
+   way, so the gallery becomes scrollable here (it's `position: fixed`
+   otherwise, so without this there'd be no way to reach the rest — same
+   gotcha noted elsewhere in this project, e.g. Information's mobile
+   layout in CLAUDE.md). Shared between both breakpoints, so declared
+   unscoped rather than nested inside either @media block (a @keyframes
+   nested in one @media block isn't visible to a different one).
+   ============================================================ */
+
+@keyframes photography-table-in-stacked {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes photography-table-out-stacked {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+@media (max-width: 768px) {
+  .photography__gallery-wrap {
+    overflow-y: auto;
+  }
+
+  /* Also switched out of `position: absolute; inset: 0` (which pins its
+     height to the wrap's, regardless of the now-taller stacked content) so
+     the wrap's `overflow-y: auto` above has a plain, unambiguous normal-flow
+     height to scroll — simpler to reason about than relying on an
+     absolutely-positioned box's overflow bubbling up correctly. */
+  .photography__gallery {
+    position: static;
+  }
+
+  .photography__table {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-bottom: 1.5rem;
+  }
+
+  /* Must come after the --0..--5 rules above (equal specificity — last
+     declared wins, media query or not) or this override gets silently
+     undone — see the CLAUDE.md note on this exact bug pattern. */
+  .photography__table-img,
+  .photography__table-img--0,
+  .photography__table-img--1,
+  .photography__table-img--2,
+  .photography__table-img--3,
+  .photography__table-img--4,
+  .photography__table-img--5 {
+    position: static;
+    width: 100%;
+    rotate: 0deg;
+    z-index: auto;
+    animation-name: photography-table-in-stacked;
+  }
+
+  .photography__table--settled .photography__table-img {
+    transform: translateY(0);
+  }
+
+  .photography--leaving .photography__table-img,
+  .photography__table--leaving .photography__table-img {
+    animation-name: photography-table-out-stacked;
+  }
+
+  .photography__table-img:hover {
+    transform: scale(1.03) !important;
+  }
+}
+
+/* Tablet (768–1180px): 2 photos per row instead of the desktop scattered
+   table (which is calibrated for a wide landscape-ish area and reads
+   cramped at this width) or mobile's single column (tablet has the room
+   for 2). Same normal-flow + scrollable approach as mobile, just a 2-column
+   grid instead of a flex column. `minmax(0, 1fr)` (not a bare `1fr`) per
+   this project's own documented gotcha (see the Photography bento grid bug
+   in CLAUDE.md) — a bare `1fr` column can be blown out by an image's
+   intrinsic aspect ratio even with `width: 100%` set. */
+@media (min-width: 768px) and (max-width: 1180px) {
+  .photography__gallery-wrap {
+    overflow-y: auto;
+  }
+
+  .photography__gallery {
+    position: static;
+  }
+
+  .photography__table {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .photography__table-img,
+  .photography__table-img--0,
+  .photography__table-img--1,
+  .photography__table-img--2,
+  .photography__table-img--3,
+  .photography__table-img--4,
+  .photography__table-img--5 {
+    position: static;
+    width: 100%;
+    rotate: 0deg;
+    z-index: auto;
+    animation-name: photography-table-in-stacked;
+  }
+
+  .photography__table--settled .photography__table-img {
+    transform: translateY(0);
+  }
+
+  .photography--leaving .photography__table-img,
+  .photography__table--leaving .photography__table-img {
+    animation-name: photography-table-out-stacked;
+  }
+
+  .photography__table-img:hover {
+    transform: scale(1.03) !important;
+  }
+}

@@ -1,0 +1,80 @@
+.custom-cursor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.custom-cursor__dot,
+.custom-cursor__ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+.custom-cursor__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-cream);
+}
+
+.custom-cursor--hover .custom-cursor__dot {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.custom-cursor__ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--rgb-cream), 0.8);
+  transition: width 0.25s cubic-bezier(0.33, 0, 0.2, 1), height 0.25s cubic-bezier(0.33, 0, 0.2, 1),
+    background 0.25s ease;
+}
+
+.custom-cursor--hover .custom-cursor__ring {
+  width: 64px;
+  height: 64px;
+  background: rgba(var(--rgb-cream), 0.12);
+  backdrop-filter: blur(2px);
+}
+
+.custom-cursor__ring-text {
+  font: 600 11px/1 'General Sans', system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  color: var(--color-cream);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.custom-cursor--hover .custom-cursor__ring-text {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Dark theme (Information/Photography's light #e8e6e6 background needs a
+   dark cursor instead of the cream default used on Home's dark video) —
+   applied via .custom-cursor--dark, set by Home.jsx based on the active
+   section. */
+
+.custom-cursor--dark .custom-cursor__dot {
+  background: var(--color-ink);
+}
+
+.custom-cursor--dark .custom-cursor__ring {
+  border-color: rgba(var(--rgb-ink), 0.8);
+}
+
+.custom-cursor--dark.custom-cursor--hover .custom-cursor__ring {
+  background: rgba(var(--rgb-ink), 0.1);
+}
+
+.custom-cursor--dark .custom-cursor__ring-text {
+  color: var(--color-ink);
+}

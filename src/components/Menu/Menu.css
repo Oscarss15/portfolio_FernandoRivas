@@ -1,0 +1,405 @@
+.menu {
+  align-self: flex-end;
+  width: clamp(260px, 30vw, 480px);
+  margin-right: calc(-1 * clamp(0.75rem, 2vw, 1.5rem));
+}
+
+/* Tablet (portrait through landscape, ~768–1180px): the fluid clamp() sizing
+   above lands on the small side of its range in this band (the desktop cap
+   isn't reached until ~1600px viewport width), reading noticeably smaller
+   than intended. Bump the floor + vw multiplier + cap so the menu reads
+   larger on tablets specifically, without touching phone or desktop sizing. */
+@media (min-width: 768px) and (max-width: 1180px) {
+  .menu {
+    width: clamp(340px, 40vw, 520px);
+  }
+}
+
+/* Blocks hover/click on the menu items until the slide-right entrance has
+   fully finished (moving the mouse over "Photography"/"Information" mid-
+   entrance used to trigger the hover-reveal lines/panels while the text
+   itself was still sliding in, which looked broken). 3.7s = MENU_START_DELAY_MS
+   (2.6s) + the 3rd item's stagger (2 * STAGGER_ITEM_MS = 0.4s) + its own
+   0.7s animation — see Menu.jsx. If those constants change, or the reserved
+   `letters-color` animation gets switched back on (its own cumulative timing
+   via getLetterColorItemDelays() is different), this duration must be
+   recalculated to match.
+   Deliberately no `forwards` here: once the animation's active period ends,
+   it should fully let go of `pointer-events` again (reverting to the normal
+   inherited value) instead of permanently pinning it to `auto` — otherwise
+   that pinned value would outrank `.menu--exiting`'s inherited `none` later
+   (an animation-driven value beats a plain inherited one regardless of
+   which element declared it), leaving the menu clickable while it's
+   sliding away. */
+@keyframes menu-enable-hover {
+  0%,
+  99.9% {
+    pointer-events: none;
+  }
+  100% {
+    pointer-events: auto;
+  }
+}
+
+.menu__list {
+  animation: menu-enable-hover 3.7s linear;
+}
+
+@keyframes menu-exit-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(90px);
+  }
+}
+
+.menu--exiting {
+  pointer-events: none;
+  animation: menu-exit-right 1s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+.menu__hover-exit {
+  pointer-events: none;
+  animation: menu-exit-right 1s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+.menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.menu__item {
+  position: relative;
+}
+
+.menu__item-line {
+  display: block;
+  width: 96%;
+  margin-left: auto;
+  height: 2px;
+  background: rgba(var(--rgb-white), 0.7);
+}
+
+.menu__item-line--overlay {
+  width: auto;
+  margin: 0;
+  z-index: 2;
+}
+
+.menu__featured-reveal {
+  z-index: 1;
+  overflow: hidden;
+}
+
+.menu__featured-reveal--0 {
+  background: transparent;
+}
+
+.menu__featured-reveal--1 {
+  background: transparent;
+}
+
+.menu__featured-reveal--2 {
+  background: transparent;
+}
+
+.menu__featured-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.menu__featured-stack-img {
+  position: absolute;
+  width: 62%;
+  height: 68%;
+  object-fit: cover;
+  border: 3px solid rgba(var(--rgb-white), 0.9);
+  box-shadow: 0 10px 26px rgba(var(--rgb-black), 0.4);
+  opacity: 0;
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.menu__featured-stack-img--0 {
+  top: 4%;
+  left: 3%;
+  z-index: 4;
+  animation-name: menu-featured-stack-in-0;
+}
+
+.menu__featured-stack-img--1 {
+  top: 13%;
+  left: 15%;
+  z-index: 3;
+  animation-name: menu-featured-stack-in-1;
+}
+
+.menu__featured-stack-img--2 {
+  top: 22%;
+  left: 27%;
+  z-index: 2;
+  animation-name: menu-featured-stack-in-2;
+}
+
+@keyframes menu-featured-stack-in-0 {
+  from {
+    opacity: 0;
+    transform: translateY(16px) rotate(-3deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-3deg);
+  }
+}
+
+@keyframes menu-featured-stack-in-1 {
+  from {
+    opacity: 0;
+    transform: translateY(16px) rotate(2deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(2deg);
+  }
+}
+
+@keyframes menu-featured-stack-in-2 {
+  from {
+    opacity: 0;
+    transform: translateY(16px) rotate(4deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(4deg);
+  }
+}
+
+.menu__featured-stack-img--leaving {
+  animation-duration: 0.35s;
+}
+
+.menu__featured-stack-img--0.menu__featured-stack-img--leaving {
+  animation-name: menu-featured-stack-out-0;
+}
+
+.menu__featured-stack-img--1.menu__featured-stack-img--leaving {
+  animation-name: menu-featured-stack-out-1;
+}
+
+.menu__featured-stack-img--2.menu__featured-stack-img--leaving {
+  animation-name: menu-featured-stack-out-2;
+}
+
+@keyframes menu-featured-stack-out-0 {
+  from {
+    opacity: 1;
+    transform: translateY(0) rotate(-3deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px) rotate(-3deg);
+  }
+}
+
+@keyframes menu-featured-stack-out-1 {
+  from {
+    opacity: 1;
+    transform: translateY(0) rotate(2deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px) rotate(2deg);
+  }
+}
+
+@keyframes menu-featured-stack-out-2 {
+  from {
+    opacity: 1;
+    transform: translateY(0) rotate(4deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px) rotate(4deg);
+  }
+}
+
+.menu__featured-reveal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transform-origin: center;
+  animation: menu-info-image-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes menu-info-image-pop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.menu__featured-reveal-img--leaving {
+  animation-name: menu-info-image-pop-out;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.36, 0, 0.66, -0.56);
+  animation-fill-mode: both;
+}
+
+@keyframes menu-info-image-pop-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+.menu__photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.menu__photo-grid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  animation: menu-photo-step-in 0.45s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+@keyframes menu-photo-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu__photo-grid-img--leaving {
+  animation-name: menu-photo-step-out;
+  animation-duration: 0.22s;
+  animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes menu-photo-step-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+
+.menu__link {
+  display: block;
+  margin-left: 4%;
+  padding: clamp(0.15rem, 0.3vw, 0.3rem) 0 clamp(1.2rem, 2.4vw, 2.4rem);
+  line-height: 1;
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: clamp(1.55rem, 2.85vw, 3.7rem);
+  text-align: left;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+/* Home sits over the video, not a themed surface — only the "color" theme
+   tints the menu text (to the accent color); dark leaves it white, same
+   reasoning as the title/subtitle in Home.css. */
+:root[data-theme='color'] .menu__link {
+  color: var(--color-theme-accent);
+}
+
+@media (min-width: 768px) and (max-width: 1180px) {
+  .menu__link {
+    font-size: clamp(2.1rem, 4vw, 3.9rem);
+  }
+}
+
+.menu__link:hover {
+  opacity: 0.7;
+}
+
+@keyframes menu-slide-right-in {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.menu__item--anim-slide-right {
+  opacity: 0;
+  animation: menu-slide-right-in 0.7s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+@keyframes menu-letter-color-in {
+  0% {
+    opacity: 0;
+    color: transparent;
+  }
+  1% {
+    opacity: 1;
+    color: transparent;
+  }
+  100% {
+    opacity: 1;
+    color: var(--color-white);
+  }
+}
+
+.menu__letter--anim {
+  display: inline-block;
+  opacity: 0;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(var(--rgb-white), 0.9);
+  animation: menu-letter-color-in 1.5s linear both;
+}
+
+@keyframes menu-line-reveal {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.menu__line-anim {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: rgba(var(--rgb-white), 0.7);
+  transform-origin: right;
+  transform: scaleX(0);
+  animation: menu-line-reveal 0.15s ease-out both;
+}

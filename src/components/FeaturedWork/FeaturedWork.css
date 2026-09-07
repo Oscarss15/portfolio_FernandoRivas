@@ -1,0 +1,572 @@
+/* Same background/palette recipe as .information/.photography — fixed
+   full-screen, no own background (relies on VideoBackground's shared
+   --color-page-bg layer fading in behind it), same text color, same
+   back-button style (copy-pasted, not a shared component yet). */
+.featured-work {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow-y: auto;
+  color: var(--color-ink);
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 5vw, 5rem) clamp(3rem, 6vw, 5rem);
+  box-sizing: border-box;
+}
+
+.featured-work__back {
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  background: transparent;
+  border: 1px solid rgba(var(--rgb-ink), 0.3);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  opacity: 0;
+  filter: blur(14px);
+  animation: featured-work-chrome-in 1s cubic-bezier(0.33, 0, 0.2, 1) both;
+  animation-delay: 0.1s;
+}
+
+.featured-work__back:hover {
+  background: var(--color-ink);
+  color: var(--color-page-bg);
+}
+
+.featured-work__back-arrow {
+  transition: transform 0.2s ease;
+}
+
+.featured-work__back:hover .featured-work__back-arrow {
+  transform: translateX(-3px);
+}
+
+@keyframes featured-work-chrome-in {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.featured-work--leaving .featured-work__back {
+  animation: featured-work-chrome-out 0.4s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+@keyframes featured-work-chrome-out {
+  from {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+.featured-work__grid {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+@media (max-width: 900px) {
+  .featured-work__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.featured-work__card {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(var(--rgb-black), 0.1);
+  opacity: 0;
+  transform: translateY(24px);
+  animation: featured-work-card-in 0.7s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+@keyframes featured-work-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.featured-work__thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.33, 0, 0.2, 1);
+}
+
+.featured-work__card:hover .featured-work__thumb {
+  transform: scale(1.05);
+}
+
+.featured-work__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--rgb-black), 0.15);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.featured-work__card:hover .featured-work__overlay {
+  opacity: 1;
+}
+
+.featured-work__play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(var(--rgb-white), 0.9);
+  color: var(--color-ink);
+  transform: scale(0.8);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.featured-work__card:hover .featured-work__play {
+  transform: scale(1);
+}
+
+.featured-work__meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(to top, rgba(var(--rgb-black), 0.65), rgba(var(--rgb-black), 0));
+  text-align: left;
+}
+
+.featured-work__title {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  letter-spacing: 0.02em;
+  color: var(--color-white);
+  text-transform: uppercase;
+}
+
+.featured-work__details {
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: rgba(var(--rgb-white), 0.8);
+}
+
+/* ============================================================
+   Stacked rows — one large project per row, alternating media/info sides
+   (odd rows: media left; even rows: media right, via row-reverse), closer
+   to an editorial case-study list than a photo grid. Media keeps the same
+   thumb/overlay/play treatment as the grid cards.
+   ============================================================ */
+
+.featured-work__stack {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.featured-work__stack-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  opacity: 0;
+  transform: translateY(24px);
+  animation: featured-work-card-in 0.7s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+.featured-work__stack-row:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+@media (max-width: 800px) {
+  .featured-work__stack-row,
+  .featured-work__stack-row:nth-child(even) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.featured-work__stack-media {
+  position: relative;
+  flex: 0 0 58%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(var(--rgb-black), 0.1);
+}
+
+@media (max-width: 800px) {
+  .featured-work__stack-media {
+    flex-basis: auto;
+  }
+}
+
+.featured-work__stack-media .featured-work__thumb {
+  transition: transform 0.5s cubic-bezier(0.33, 0, 0.2, 1);
+}
+
+.featured-work__stack-media:hover .featured-work__thumb {
+  transform: scale(1.05);
+}
+
+.featured-work__stack-media:hover .featured-work__overlay {
+  opacity: 1;
+}
+
+.featured-work__stack-media:hover .featured-work__play {
+  transform: scale(1);
+}
+
+.featured-work__stack-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.featured-work__stack-index {
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: rgba(var(--rgb-ink), 0.5);
+}
+
+.featured-work__stack-title {
+  margin: 0;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+
+.featured-work__stack-details {
+  margin: 0;
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: rgba(var(--rgb-ink), 0.7);
+}
+
+/* ============================================================
+   List + preview — a plain vertical list of titles on the left; hovering
+   (or focusing) one crossfades a large image into the fixed panel on the
+   right. Classic editorial/agency-site pattern, leans on typography rather
+   than a wall of thumbnails.
+   ============================================================ */
+
+.featured-work__list-preview {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  display: flex;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: flex-start;
+}
+
+@media (max-width: 800px) {
+  .featured-work__list-preview {
+    flex-direction: column;
+  }
+}
+
+.featured-work__list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.featured-work__list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1.1rem 0;
+  border: none;
+  border-top: 1px solid rgba(var(--rgb-ink), 0.2);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0;
+  animation: featured-work-card-in 0.6s cubic-bezier(0.33, 0, 0.2, 1) both;
+  transition: opacity 0.2s ease;
+}
+
+.featured-work__list:hover .featured-work__list-item:not(:hover) {
+  opacity: 0.45;
+}
+
+.featured-work__list-title {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.featured-work__list-details {
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: rgba(var(--rgb-ink), 0.6);
+}
+
+.featured-work__preview-panel {
+  position: sticky;
+  top: 1rem;
+  flex: 0 0 min(42vw, 460px);
+  aspect-ratio: 4 / 5;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(var(--rgb-black), 0.1);
+}
+
+@media (max-width: 800px) {
+  .featured-work__preview-panel {
+    flex-basis: auto;
+    width: 100%;
+    position: static;
+  }
+}
+
+.featured-work__preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: featured-work-preview-fade 0.4s ease both;
+}
+
+@keyframes featured-work-preview-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   Carousel — one project at a time, filling almost the full screen (as
+   opposed to the other 3 layouts, which all show every project at once).
+   Prev/next arrows + dot indicators, same overlay/play-button treatment as
+   the other cards. The slide image reuses .featured-work__thumb for its
+   sizing/positioning and .featured-work__carousel-img just for the
+   crossfade — remounted via `key={activeSlide.id}` so it restarts on every
+   slide change.
+   ============================================================ */
+
+.featured-work__carousel {
+  position: relative;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  width: 100%;
+  height: min(72vh, 720px);
+}
+
+.featured-work__carousel-slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(var(--rgb-black), 0.1);
+}
+
+.featured-work__carousel-slide:hover .featured-work__thumb {
+  transform: scale(1.03);
+}
+
+.featured-work__carousel-slide:hover .featured-work__overlay {
+  opacity: 1;
+}
+
+.featured-work__carousel-slide:hover .featured-work__play {
+  transform: scale(1);
+}
+
+.featured-work__carousel-img {
+  animation: featured-work-preview-fade 0.4s ease both;
+}
+
+.featured-work__carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--rgb-white), 0.6);
+  background: rgba(var(--rgb-black), 0.35);
+  color: var(--color-white);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.featured-work__carousel-nav:hover {
+  background: rgba(var(--rgb-black), 0.6);
+}
+
+.featured-work__carousel-nav--prev {
+  left: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.featured-work__carousel-nav--next {
+  right: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.featured-work__carousel-dots {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.featured-work__carousel-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--rgb-white), 0.7);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.featured-work__carousel-dot--active {
+  background: var(--color-white);
+}
+
+/* ---------- Lightbox: click a card to play its video full-screen ---------- */
+
+.featured-work__lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--rgb-black), 0.85);
+  cursor: pointer;
+  padding: clamp(1.5rem, 4vw, 4rem);
+  box-sizing: border-box;
+}
+
+.featured-work__lightbox-inner {
+  width: 100%;
+  max-width: 1100px;
+  cursor: default;
+}
+
+.featured-work__lightbox-video {
+  width: 100%;
+  max-height: 75vh;
+  display: block;
+  background: var(--color-black);
+}
+
+.featured-work__lightbox-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 1rem;
+}
+
+.featured-work__lightbox-caption .featured-work__title {
+  color: var(--color-white);
+}
+
+.featured-work__lightbox-caption .featured-work__details {
+  color: rgba(var(--rgb-white), 0.75);
+}
+
+/* ---------- Layout switcher — permanent, user-facing control ----------
+   Lives in .featured-work__topbar alongside the back button (same row, same
+   height) rather than floating separately, and matches the back button's
+   own visual language (transparent pill, --rgb-ink border, fills solid on
+   hover/active) instead of the old dark floating dev-picker look. */
+
+.featured-work__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.featured-work__layout-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  opacity: 0;
+  filter: blur(14px);
+  animation: featured-work-chrome-in 1s cubic-bezier(0.33, 0, 0.2, 1) both;
+  animation-delay: 0.1s;
+}
+
+.featured-work--leaving .featured-work__layout-switcher {
+  animation: featured-work-chrome-out 0.4s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+.featured-work__layout-btn {
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--color-ink);
+  background: transparent;
+  border: 1px solid rgba(var(--rgb-ink), 0.3);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.featured-work__layout-btn:hover {
+  border-color: rgba(var(--rgb-ink), 0.6);
+}
+
+.featured-work__layout-btn--active {
+  background: var(--color-ink);
+  color: var(--color-page-bg);
+  border-color: var(--color-ink);
+}

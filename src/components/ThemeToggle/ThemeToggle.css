@@ -1,0 +1,86 @@
+/* `position: fixed` (viewport-relative), not `absolute` — this is mounted
+   at the top level in Home.jsx (sibling of CustomCursor, outside
+   VideoBackground) so it stays on screen across Home *and* Information/
+   Photography, not just the landing page. Bottom-left mirrors Menu's
+   bottom-right position on Home; `z-index: 15` clears Information/
+   Photography's own `z-index: 5` full-screen sections so it isn't buried
+   underneath them. */
+.theme-toggle {
+  position: fixed;
+  bottom: 1.5rem;
+  left: clamp(0.75rem, 2vw, 1.5rem);
+  z-index: 15;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ============================================================
+   Iris — camera-aperture blades, fill color = active theme.
+   Clicking replays a quick close/reopen "shutter snap" (remounted
+   via `key`).
+   ============================================================ */
+
+.theme-toggle__iris {
+  filter: drop-shadow(0 2px 6px rgba(var(--rgb-black), 0.35));
+  animation: theme-toggle-iris-snap 0.45s cubic-bezier(0.33, 0, 0.2, 1);
+}
+
+@keyframes theme-toggle-iris-snap {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.7);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.theme-toggle__iris-blade {
+  transition: fill 0.3s ease;
+}
+
+.theme-toggle__iris-ring {
+  fill: none;
+  /* stroke color set inline from THEME_COLORS in ThemeToggle.jsx, matching
+     the active blade color instead of a fixed white */
+  stroke-width: 1;
+  transition: stroke 0.3s ease;
+}
+
+/* ============================================================
+   Tooltip — hover-only, names what clicking does (the next theme, not the
+   current one). Always a dark chip + light text regardless of the active
+   theme, same pattern as CustomCursor's text/timecode variants — that way
+   it stays legible no matter what's behind the button (video, light page,
+   dark page, or the orange page background under the color theme).
+   ============================================================ */
+
+.theme-toggle__tooltip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  white-space: nowrap;
+  font: 500 12px/1 'General Sans', system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  color: var(--color-cream);
+  background: rgba(var(--rgb-black), 0.6);
+  padding: 6px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.theme-toggle:hover .theme-toggle__tooltip,
+.theme-toggle:focus-visible .theme-toggle__tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}

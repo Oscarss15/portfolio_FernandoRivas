@@ -1,0 +1,119 @@
+.home {
+  width: 100vw;
+  height: 100svh;
+}
+
+.home__top {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home__title {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.home__title-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.home__title-svg text {
+  font-weight: 700;
+  font-size: 120px;
+  text-transform: uppercase;
+  fill: var(--color-white);
+}
+
+/* Home sits over the video, not a themed surface, so it doesn't use
+   --color-page-bg/--color-ink — only the "color" theme changes anything
+   here (dark leaves it alone, since the video is already dark and white
+   text already reads fine against it). */
+:root[data-theme='color'] .home__title-svg text {
+  fill: var(--color-theme-accent);
+}
+
+.home__role {
+  margin: 0;
+  color: rgba(var(--rgb-white), 0.85);
+  font-weight: 500;
+  font-size: 1.2rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+:root[data-theme='color'] .home__role {
+  color: rgba(var(--rgb-theme-accent), 0.85);
+}
+
+.home__role--below {
+  width: 95%;
+  margin: 1.2rem auto 0;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Mobile + tablet: the subtitle's left edge lines up with the title's on
+   desktop (both share the 95%-width box) — a deliberate, A/B-tested choice,
+   but only validated on wide (~1600px+) screens. The title always fills the
+   full 95% width (SVG textLength stretches it regardless of viewport), so it
+   reads visually symmetric at any size; the short subtitle text left-aligned
+   in that same wide box leaves an increasingly obvious empty gap to its
+   right the narrower the screen gets. Centering below tablet width reads as
+   one balanced block instead. Font-size shrink is mobile-only (600px) — the
+   fixed 1.2rem was also just too large / prone to wrapping awkwardly at
+   phone widths; tablet keeps the normal size, just centered. */
+@media (max-width: 1180px) {
+  .home__role--below {
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .home__role {
+    font-size: clamp(0.75rem, 3.4vw, 1rem);
+    letter-spacing: 0.12em;
+  }
+}
+
+@keyframes home-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.home__title-text--anim {
+  opacity: 0;
+  animation: home-fade-in 3s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+.home__role--anim {
+  opacity: 0;
+  animation: home-fade-in 1.1s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+@keyframes home-exit-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-70px);
+  }
+}
+
+.home__title-text--exit,
+.home__role--exit {
+  animation: home-exit-up 1s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
