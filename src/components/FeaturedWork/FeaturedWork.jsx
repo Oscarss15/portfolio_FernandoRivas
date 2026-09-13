@@ -2,15 +2,12 @@ import { useState } from 'react'
 import MuxPlayer from '@mux/mux-player-react'
 import './FeaturedWork.css'
 
-// 5 projects, all now pointing at their real (uncompressed, still huge)
-// clips in public/videos/ and their real thumbnail frames in public/img/.
-// `video` is a local-file fallback used only until a project's real Mux
-// Playback ID is filled into `muxPlaybackId` below — once set, the lightbox
-// streams from Mux (via <MuxPlayer>) instead of loading the local file.
-// Either way it's only ever loaded on click (the lightbox isn't rendered
-// until opened), not preloaded like the Home hero background is, but the
-// local featured1-5 files are still 180MB-900MB each — flagged as needing
-// compression/Mux migration before shipping, same as showreel.mp4.
+// 5 real projects. All 5 now stream from Mux via `muxPlaybackId` (see
+// VideoBackground.jsx's own Mux notes for the hls.js gotcha that applied
+// here too) — the local featured1-5 files under `video` were the pre-Mux
+// fallback and have since been deleted from public/videos/, so `video` is
+// dead but harmless (muxPlaybackId is always truthy now, so the lightbox
+// never falls back to it). Real thumbnail frames live in public/img/.
 const PROJECTS = [
   { id: 1, title: 'A Way of Being', type: 'Documentary', role: 'DP, Editor & Colorist', thumbnail: '/img/featured1.jpg', video: '/videos/featured1.mp4', muxPlaybackId: 'PjyVc2TvuwdwBGgqd3BLTUO7jEoGBe00BwKIAOF01ObtU' },
   { id: 2, title: 'The Secret of Happiness', type: 'Short film', role: 'DP & Colorist', thumbnail: '/img/featured2.jpg', video: '/videos/featured2.mp4', muxPlaybackId: 'bm014XS5RgZJPuuIA00mDds4GjwUn00g6ySuvYzY16OYvc' },
