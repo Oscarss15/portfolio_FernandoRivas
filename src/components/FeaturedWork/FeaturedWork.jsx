@@ -2,18 +2,17 @@ import { useState } from 'react'
 import MuxPlayer from '@mux/mux-player-react'
 import './FeaturedWork.css'
 
-// 5 real projects. All 5 now stream from Mux via `muxPlaybackId` (see
-// VideoBackground.jsx's own Mux notes for the hls.js gotcha that applied
-// here too) — the local featured1-5 files under `video` were the pre-Mux
-// fallback and have since been deleted from public/videos/, so `video` is
-// dead but harmless (muxPlaybackId is always truthy now, so the lightbox
-// never falls back to it). Real thumbnail frames live in public/img/.
+// 6 real projects. The first 5 stream from Mux; the latest one is embedded
+// from YouTube via `youtubeId`. Real thumbnail frames live in public/img/,
+// while YouTube provides the new project's thumbnail.
 const PROJECTS = [
   { id: 1, title: 'A Way of Being', type: 'Documentary', role: 'DP, Editor & Colorist', thumbnail: '/img/featured1.jpg', video: '/videos/featured1.mp4', muxPlaybackId: 'PjyVc2TvuwdwBGgqd3BLTUO7jEoGBe00BwKIAOF01ObtU' },
   { id: 2, title: 'The Secret of Happiness', type: 'Short film', role: 'DP & Colorist', thumbnail: '/img/featured2.jpg', video: '/videos/featured2.mp4', muxPlaybackId: 'bm014XS5RgZJPuuIA00mDds4GjwUn00g6ySuvYzY16OYvc' },
   { id: 3, title: 'The Big Task', type: 'Short film', role: 'DP & Colorist', thumbnail: '/img/featured3.jpg', video: '/videos/featured3.mov', muxPlaybackId: '2iQOs3GimNNRjih9rJ6kzB4401m1Y01IrjZ29LbGKfTEE' },
   { id: 4, title: 'Interviews Workshop', type: 'Interview', role: 'Colorist', thumbnail: '/img/featured4.jpg', video: '/videos/featured4.mov', muxPlaybackId: '5m7Mh3jH43ovbqX5vIuPAKgttQZ6CSvjfYJzhBuDCKM' },
   { id: 5, title: 'Untitled Unmastered', type: 'Extreme Sports Video', role: 'DP, Editor & Colorist', thumbnail: '/img/featured5.png', video: '/videos/featured5.mp4', muxPlaybackId: 'yGLyxtLIsYac1j0002I010001gxW3loUYOq0100DOnL2bhNj00g' },
+  { id: 6, title: 'Hedda', type: 'Short film', role: 'DP', thumbnail: 'https://img.youtube.com/vi/_aKbLq1zFek/maxresdefault.jpg', youtubeId: '_aKbLq1zFek' },
+  { id: 7, title: 'TASHA TARUSØVA Many Ways to Kill', type: 'Music video', role: 'Assistant camera', thumbnail: 'https://img.youtube.com/vi/SkPoHk4TBME/maxresdefault.jpg', youtubeId: 'SkPoHk4TBME' },
 ]
 
 // Kept as a permanent, user-facing layout switcher (not a throwaway dev
@@ -212,7 +211,15 @@ function FeaturedWork({ onBack }) {
       {openProject && (
         <div className="featured-work__lightbox" onClick={() => setOpenProject(null)}>
           <div className="featured-work__lightbox-inner" onClick={(e) => e.stopPropagation()}>
-            {openProject.muxPlaybackId ? (
+            {openProject.youtubeId ? (
+              <iframe
+                className="featured-work__lightbox-video"
+                src={`https://www.youtube-nocookie.com/embed/${openProject.youtubeId}?autoplay=1&rel=0`}
+                title={openProject.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            ) : openProject.muxPlaybackId ? (
               <MuxPlayer
                 className="featured-work__lightbox-video"
                 playbackId={openProject.muxPlaybackId}

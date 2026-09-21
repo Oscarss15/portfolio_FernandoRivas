@@ -501,9 +501,12 @@
 
 .featured-work__lightbox-video {
   width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
   max-height: 75vh;
   display: block;
   background: var(--color-black);
+  border: 0;
 }
 
 .featured-work__lightbox-caption {
