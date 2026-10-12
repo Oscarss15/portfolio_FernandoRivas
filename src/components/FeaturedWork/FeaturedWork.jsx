@@ -13,6 +13,7 @@ const PROJECTS = [
   { id: 5, title: 'Untitled Unmastered', type: 'Extreme Sports Video', role: 'DP, Editor & Colorist', thumbnail: '/img/featured5.png', video: '/videos/featured5.mp4', muxPlaybackId: 'yGLyxtLIsYac1j0002I010001gxW3loUYOq0100DOnL2bhNj00g' },
   { id: 6, title: 'Hedda', type: 'Short film', role: 'DP', thumbnail: 'https://img.youtube.com/vi/_aKbLq1zFek/maxresdefault.jpg', youtubeId: '_aKbLq1zFek' },
   { id: 7, title: 'TASHA TARUSØVA Many Ways to Kill', type: 'Music video', role: 'Assistant camera', thumbnail: 'https://img.youtube.com/vi/SkPoHk4TBME/maxresdefault.jpg', youtubeId: 'SkPoHk4TBME' },
+  { id: 8, title: 'OLIVES, TEA & FAMILY TIES', type: 'Short film', role: 'Colorist', thumbnail: 'https://img.youtube.com/vi/narMe99tako/maxresdefault.jpg', youtubeId: 'narMe99tako' },
 ]
 
 // Kept as a permanent, user-facing layout switcher (not a throwaway dev
